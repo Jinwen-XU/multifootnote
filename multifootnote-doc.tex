@@ -2,7 +2,9 @@
 
 \usepackage{ProjLib}
 
-\usepackage[left indent]{multifootnote}
+\setmonofont[Scale=.9]{Iosevka}
+
+\usepackage[left indent, backref]{multifootnote}
 
 %%================================
 %% For typesetting code
@@ -25,9 +27,9 @@
     breaklines = true,
     frame = lines,
     backgroundcolor = \color{code-background},
-    flexiblecolumns = true,
+    basewidth = .5em,
     escapeinside = {(*}{*)},
-    alsoletter = {_,:},
+    alsoletter = {_:},
     % numbers = left,
     % firstnumber = last,
     numberstyle = \scriptsize\ttfamily,
@@ -40,13 +42,20 @@
     texcsstyle =* \color{code-main},
     moretexcs =
       {
-        multifootnotetext,
         multifootnotemark,
+        multifootnotetext,
         multifootnotetag,
         multifootnotetagtext,
         multifootnote,
         footnotenumber,
         footnotetag,
+        multifootnotemarkmanual,
+        multifootnotetextmanual,
+        multifootnotetagmanual,
+        multifootnotetagtextmanual,
+        multifootnotemanual,
+        footnotenumbermanual,
+        footnotetagmanual,
       }
 }
 \lstset{% LaTeX3 commands
@@ -59,8 +68,8 @@
 \lstnewenvironment{code}{\setstretch{1.05}\LocallyStopLineNumbers}{\ResumeLineNumbers\vspace{-.3\baselineskip}\vspace{-.5\parskip}}
 \lstnewenvironment{code*}{\setstretch{1.05}\lstset{numbers=left}\LocallyStopLineNumbers}{\ResumeLineNumbers\vspace{-.3\baselineskip}\vspace{-.5\parskip}}
 
-\newcommand{\packageoption}[1]{\texttt{\textcolor{code-option}{#1}}}
-\newcommand{\commandoption}[1]{\texttt{\textcolor{code-keys}{#1}}}
+\newcommand{\packageoption}[1]{\textcolor{code-option}{\texttt{#1}}}
+\newcommand{\commandoption}[1]{\textcolor{code-keys}{\texttt{#1}}}
 
 %%================================
 %% tip
@@ -94,7 +103,7 @@
 
 \begin{document}
 
-\def\PackageVersion{2022/05/31}
+\def\PackageVersion{2024/03/24}
 
 \title{\multifootnotepackage{}\\\smallskip\itshape Multiple numbers for the same footnote}
 \author{Jinwen XU}
@@ -105,11 +114,15 @@
 
 \begin{abstract}
     \raggedleft
-    The package \multifootnotepackage{} provides two groups of commands for \\generating footnotes with multiple numbers (or marks, if you prefer).
+    The package \multifootnotepackage{} provides two groups of commands for generating\\footnotes which correspond to multiple numbers (or marks, if you prefer).
 \end{abstract}
 
 
-\vspace*{-.5\baselineskip}
+\addtocounter{section}{-1}
+\section{Introduction}
+
+In some cases, you may wish for certain footnotes to correspond to several places in your text. The traditional solution usually involves writing the same footnote mark multiple times at the corresponding places. However, this approach makes it difficult to see at once how many times a footnote has been referred to. Therefore, the current package proposes another method: writing the footnote marks in linear order, and allowing a footnote text to match several of these marks.
+
 
 \section{How to load it}
 
@@ -122,6 +135,10 @@ You can simply load the current package with:
 \medskip
 It has the following options:
 \begin{itemize}[label=,leftmargin=1.25em,itemindent=-1.25em]
+    \item \packageoption{backref}
+        \begin{itemize}
+            \item Enable backward referencing from the footnotes.
+        \end{itemize}
     \item \packageoption{left align}
         \begin{itemize}
             \item Align the footnotes to the left.
@@ -132,8 +149,14 @@ It has the following options:
             \item Similar to \packageoption{left align}, but with an indentation \meta{length}, default to be \texttt{1.5em}.
             \item Alternative names: \packageoption{left-indent} \,$|$\, \packageoption{leftindent}
         \end{itemize}
+    \item \packageoption{manual}
+        \begin{itemize}
+            \item Use the manual version of the commands. This means that you shall need to manually specify the place where the footnote text should print (by placing the \lstinline|\multifootnote| commands in the appropriate places). You should only use this option when the automatic result does not fit your need.
+            \item Alternative names: \packageoption{manual-mode} \,$|$\, \packageoption{manual mode} \,$|$\, \packageoption{manualmode}
+        \end{itemize}
 \end{itemize}
 
+\clearpage
 \section{How to use it}
 
 Here are two approaches for producing a footnote with multiple numbers, and in either of them, there are two commands involved.
@@ -180,13 +203,18 @@ This approach is considered more convenient, with one command to specify the \me
     \lstinline|\multifootnote| appears in both approaches for producing footnote text: it shall be interpreted as \lstinline|\multifootnotetext| if the optional argument is a comma-separated list, and as \lstinline|\multifootnotetagtext| if not. See the examples below.
 \end{tip}
 
-\bigskip
+\begin{tip}[Attention]
+    Notice that in the first approach, \meta{label} appears as an optional argument of \lstinline|\footnotenumber[|\meta{label}\lstinline|]| (thus square brackets); while in the second approach, \meta{tag} is a mandatory argument of \lstinline|\footnotetag{|\meta{tag}\lstinline|}| (thus curly brackets).
+\end{tip}
+
+\vfill
 \begin{center}
     \itshape
     If you're feeling confused, don't worry. Let's now take a look at some examples.
 \end{center}
+\vfill
 
-
+\clearpage
 \section{Examples}
 
 Here are two examples of usage, with the package option \textquote{\packageoption{left indent}} enabled.
@@ -202,10 +230,13 @@ Lorem ipsum\footnotenumber[(*\commandoption{fn1}*)] dolor\footnotenumber[(*\comm
 
 Result:
 
-\fbox{Lorem ipsum\footnotenumber[fn1] dolor\footnotenumber[fn2] sit amet\footnotenumber[fn3], consectetur\footnotenumber[fn4] adipiscing elit\footnotenumber[fn5].}
+\vspace{.5\baselineskip}\hrule\vspace{-.25\baselineskip}
+Lorem ipsum\footnotenumber[fn1] dolor\footnotenumber[fn2] sit amet\footnotenumber[fn3], consectetur\footnotenumber[fn4] adipiscing elit\footnotenumber[fn5].
+\vspace{.25\baselineskip}\hrule
 \multifootnote[fn1,fn2,fn5]{This is a footnote for demonstration.}
 \multifootnote[fn1,fn3,fn4]{This is another footnote for demonstration.}
 
+\medskip
 \subsection{The second approach}
 
 \medskip
@@ -217,20 +248,48 @@ Lorem ipsum\footnotetag{(*\commandoption{fntag1,fntag2}*)} dolor\footnotetag{(*\
 
 Result:
 
-\fbox{Lorem ipsum\footnotetag{fntag1,fntag2} dolor\footnotetag{fntag1} sit amet\footnotetag{fntag2}, consectetur\footnotetag{fntag2} adipiscing elit\footnotetag{fntag1}.}
+\vspace{.5\baselineskip}\hrule\vspace{-.25\baselineskip}
+Lorem ipsum\footnotetag{fntag1,fntag2} dolor\footnotetag{fntag1} sit amet\footnotetag{fntag2}, consectetur\footnotetag{fntag2} adipiscing elit\footnotetag{fntag1}.
+\vspace{.25\baselineskip}\hrule
 \multifootnote[fntag1]{This is a footnote for demonstration.}
 \multifootnote[fntag2]{This is another footnote for demonstration.}
 
+\bigskip
 \begin{tip}
     The second approach is more recommended, as it involves fewer labels, and you shall not need to worry about the order of footnote marks in \lstinline|\multifootnote|.
 \end{tip}
 
+\begin{tip}
+    By default, it doesn't quite matter where you put \lstinline|\multifootnote|. However, if you have enabled the package option \packageoption{manual mode}, then the corresponding footnote text shall be added to the current page immediately at where you write \lstinline|\multifootnote|.
+\end{tip}
+
+\bigskip
 \begin{tip}[Attention]
-    Notice that in the first approach, \meta{label} appears as an optional argument of \lstinline|\footnotenumber[|\meta{label}\lstinline|]| (thus square brackets); while in the second approach, \meta{tag} is a mandatory argument of \lstinline|\footnotetag{|\meta{tag}\lstinline|}| (thus curly brackets).
+    You should choose an approach you like and stick to it in your document. It is not recommended to use them both within the same document!
 \end{tip}
 
 
-\bigskip
+\clearpage
+\section{Regarding the manual version}\label{sec:manual-mode}
+
+Though the manual mode is not very convenient to be used by default (via the package option \packageoption{manual}), it is still useful to be able to switch to this mode in some cases. For example, the automatic mode would not work within a box, as with the usual footnotes; also, the automatic mode would not work quite properly when the footnote text is too long to fit into the current page. In such situations, you could switch to the manual mode temporarily, with which you could write the \lstinline|\multifootnote|, and thus typeset the footnote text outside the box.
+
+To do this, you just need to add the suffix \textquote{\lstinline|manual|} to the commands you are using, that is:
+\begin{itemize}
+    \item \lstinline|\multifootnotemarkmanual| and \lstinline|\multifootnotetextmanual|
+\end{itemize}
+for the first approach, and
+\begin{itemize}
+    \item \lstinline|\multifootnotetagmanual| and \lstinline|\multifootnotetagtextmanual|
+\end{itemize}
+for the second approach. Of course, we still have the alternative names to them:
+\begin{itemize}
+    \item \lstinline|\footnotenumbermanual| for \lstinline|\multifootnotemarkmanual|,
+    \item \lstinline|\footnotetagmanual| for \lstinline|\multifootnotetagmanual|, and
+    \item \lstinline|\multifootnotemanual| for \lstinline|\multifootnotetextmanual| or \lstinline|\multifootnotetagtextmanual|.
+\end{itemize}
+
+
 \section{Acknowledgement}
 
 This package arises from a question (\href{https://tex.stackexchange.com/q/645330}{\texttt{645330}}) on \texttt{TeX.StackExchange}. The author thanks user \href{https://tex.stackexchange.com/users/270985}{\textsf{@Bolzano}} for bringing up the question of producing such footnotes.
@@ -239,11 +298,14 @@ The author thanks \href{https://tex.stackexchange.com/users/2388}{\textsf{Ulrike
 
 The author also wishes to thank user \href{https://tex.stackexchange.com/users/213149}{\textsf{@antshar}} for proposing the second approach. The code is surprisingly simple but works just as fine as that of the first approach.
 
+During the creation and improvement of this package, the author benefited from numerous helps and inspirations from \texttt{TeX.StackExchange}, which is greatly appreciated.
+
 \section{Known issues}
 
 \begin{itemize}
     % \item When package \textsf{hyperref} is loaded, hyperlinks to those footnotes generated by the commands here cannot point to the correct place.
-    \item \multifootnotepackage{} is not compatible with the package \textsf{footnotebackref}.
+    \item \multifootnotepackage{} is not compatible with the package \textsf{footnotebackref}. However, this is not a serious problem: with the package option \packageoption{backref}, you should be able to get a similar result for which \textsf{footnotebackref} is supposed to achieve.
+    \item The automatic mode cannot deal with the situation where the footnote text is printed across pages. One should consider using the manual mode in this case, as mentioned in~\S\,\labelcref{sec:manual-mode}. However, it might be preferable to use endnote instead of footnote when there are too many footnotes or when the intended footnote text is too long.
 \end{itemize}
 
 \medskip
