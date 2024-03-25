@@ -12,7 +12,7 @@
 \NeedsTeXFormat{LaTeX2e}[2022-06-01]
 \ProvidesExplPackage
   {multifootnote}
-  {2024/03/24} {}
+  {2024/03/31} {}
   {Multiple numbers for the same footnote}
 
 \msg_new:nnn { multifootnote }
@@ -319,6 +319,7 @@
 
 \NewDocumentCommand \multifootnotetext { O{} m }
   {
+    \@bsphack
     \tl_if_blank:nTF { #1 }
       {
         \footnotetext { #2 }
@@ -329,6 +330,7 @@
             \@multifootnote@add@to@mark@text@list { #1 } { #2 }
           }
       }
+    \@esphack
   }
 \NewDocumentCommand \@multifootnote@add@to@mark@text@list { m m }
   {
@@ -507,6 +509,7 @@
 
 \NewDocumentCommand \multifootnotetagtext { O{} m }
   {
+    \@bsphack
     \tl_if_blank:nTF { #1 }
       {
         \footnotetext { #2 }
@@ -517,6 +520,7 @@
             \@multifootnote@add@to@tag@text@list { #1 } { #2 }
           }
       }
+    \@esphack
   }
 \NewDocumentCommand \@multifootnote@add@to@tag@text@list { m m }
   {
